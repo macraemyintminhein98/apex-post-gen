@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex PostGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+        <h1 class="text-3xl font-bold text-center mb-6">Apex PostGen</h1>
+        <p class="text-gray-600 text-center mb-8">Quick social media content ideas for your niche business.</p>
+        
+        <form action="/generate" method="POST">
+            <div class="mb-4">
+                <label for="keywords" class="block text-gray-700 text-sm font-bold mb-2">Niche Keywords (up to 3-5 words):</label>
+                <input type="text" id="keywords" name="keywords" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., pet grooming, vintage cars" required>
+            </div>
+            <div class="mb-6">
+                <label for="tone" class="block text-gray-700 text-sm font-bold mb-2">Post Tone:</label>
+                <select id="tone" name="tone" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="informative">Informative</option>
+                    <option value="humorous">Humorous</option>
+                    <option value="engaging">Engaging</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                Generate Ideas
+            </button>
+        </form>
+
+        <div id="results" class="mt-8 hidden">
+            <h2 class="text-xl font-bold mb-4">Your Post Ideas:</h2>
+            <div id="post-ideas" class="space-y-4"></div>
+            <img id="post-image" src="" alt="Relevant Visual" class="mt-6 rounded-lg w-full h-48 object-cover">
+        </div>
+    </div>
+
+    <script>
+        // Basic client-side logic to show results (actual generation needs backend)
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const response = await fetch('/api/generate-posts', {
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(formData)),
+                headers: {'Content-Type': 'application/json'}
+            });
+            const data = await response.json();
+            
+            const postIdeasDiv = document.getElementById('post-ideas');
+            postIdeasDiv.innerHTML = data.posts.map(post => `<p class="bg-gray-50 p-3 rounded">${post}</p>`).join('');
+            document.getElementById('post-image').src = data.imageUrl;
+            document.getElementById('results').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
